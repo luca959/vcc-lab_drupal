@@ -1,0 +1,47 @@
+services:
+  cms:
+    image: 'drupal:latest'
+    hostname: drupal
+    environment:
+      DB_HOST: db
+      DB_NAME: drupal
+      DB_USER: drupal
+      DB_PASSWORD: password
+      DRUPAL_ADMIN: admin
+      DRUPAL_ADMIN_PASS: admin
+      DRUPAL_ADMIN_EMAIL: admin@example.com
+      DRUPAL_SITE_NAME: My new DRUPAL site
+    #volumes: null
+    ports:
+      - '8080:80'
+    depends_on:
+      - db
+    networks:
+      extnet:
+        ipv4_address: 192.168.13.2
+      intnet:
+        ipv4_address: 192.168.14.2
+  db:
+    image: 'mariadb:latest'
+    hostname: db
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: drupal
+      MYSQL_USER: drupal
+      MYSQL_PASSWORD: password
+    networks:
+      intnet:
+        ipv4_address: 192.168.14.3
+networks:
+  intnet:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.14.0/24
+  extnet:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.13.0/24
